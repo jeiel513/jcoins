@@ -1,41 +1,73 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
-  buscarNotificacoes,
-  marcarComoLida
-} from "../services/notificacaoService";
-import { buscarUsuario } from "../services/usuarioService";
+  buscarNotificacoes
+} from "../firebase/notificationService";
+
+import {
+  buscarUsuario
+} from "../services/usuarioService";
 
 
 export default function Notificacoes(){
+
+  console.log("ENTROU NA PAGINA NOTIFICACOES");
+
 
   const navigate = useNavigate();
 
   const [notificacoes,setNotificacoes] = useState([]);
 
+  const [usuario,setUsuario] = useState(null);
 
 
-  function carregar(){
 
-    const usuario = buscarUsuario();
+  async function carregar(){
 
-
-    const lista = buscarNotificacoes();
+    console.log("INICIANDO CARREGAMENTO");
 
 
-    const minhas = lista.filter(
+    const usuarioSalvo = buscarUsuario();
 
-      item => item.usuarioId === usuario.id
 
+    console.log(
+      "USUARIO SALVO:",
+      usuarioSalvo
     );
 
 
-    setNotificacoes(minhas);
+    setUsuario(usuarioSalvo);
+
+
+
+    if(!usuarioSalvo){
+
+      console.log(
+        "SEM USUARIO LOGADO"
+      );
+
+      return;
+
+    }
+
+
+
+    const lista = await buscarNotificacoes(
+      usuarioSalvo.id
+    );
+
+
+    console.log(
+      "NOTIFICACOES ENCONTRADAS:",
+      lista
+    );
+
+
+    setNotificacoes(lista);
 
 
   }
-
-
 
 
 
@@ -49,27 +81,11 @@ export default function Notificacoes(){
 
 
 
-
-  function ler(id){
-
-    marcarComoLida(id);
-
-    carregar();
-
-  }
-
-
-
-
-
-
   return (
 
     <div className="min-h-screen bg-black text-white p-6">
 
-
       <div className="max-w-md mx-auto">
-
 
 
         <button
@@ -86,7 +102,6 @@ export default function Notificacoes(){
 
 
 
-
         <h1 className="text-3xl font-bold text-yellow-400 mb-6">
 
           🔔 Notificações
@@ -95,10 +110,19 @@ export default function Notificacoes(){
 
 
 
+        {
+          usuario &&
 
+          <div className="bg-zinc-900 rounded-xl p-3 mb-4 text-sm">
 
+            Usuário ID:
 
-        <div className="space-y-4">
+            <br />
+
+            {usuario.id}
+
+          </div>
+        }
 
 
 
@@ -128,22 +152,9 @@ export default function Notificacoes(){
 
               key={item.id}
 
-              className={
-
-                `bg-zinc-900 rounded-2xl p-5 border ${
-
-                  item.lida
-
-                  ? "border-zinc-700"
-
-                  : "border-yellow-500"
-
-                }`
-
-              }
+              className="bg-zinc-900 rounded-2xl p-5 mb-4 border border-yellow-500"
 
             >
-
 
               <p>
 
@@ -152,35 +163,11 @@ export default function Notificacoes(){
               </p>
 
 
-
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-gray-500 text-sm mt-2">
 
                 {new Date(item.data).toLocaleString()}
 
               </p>
-
-
-
-              {
-
-                !item.lida &&
-
-
-                <button
-
-                  onClick={()=>ler(item.id)}
-
-                  className="mt-3 text-yellow-400"
-
-                >
-
-                  Marcar como lida
-
-                </button>
-
-
-              }
-
 
 
             </div>
@@ -189,11 +176,6 @@ export default function Notificacoes(){
           ))
 
         }
-
-
-
-        </div>
-
 
 
       </div>

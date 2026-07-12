@@ -156,3 +156,35 @@ export async function adicionarSaldo(id,valor){
   return true;
 
 }
+export async function buscarUsuarioPorUid(uid){
+
+  const consulta = query(
+    usuariosRef,
+    where("uid","==",uid)
+  );
+
+
+  const resultado = await getDocs(
+    consulta
+  );
+
+
+  if(resultado.empty){
+
+    return null;
+
+  }
+
+
+  const documento = resultado.docs[0];
+
+
+  return {
+
+    id: documento.id,
+
+    ...documento.data()
+
+  };
+
+}

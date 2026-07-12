@@ -1,29 +1,78 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { auth } from "../firebase/config";
+
 import {
-  buscarUsuario,
+  buscarUsuarioPorUid,
   atualizarUsuario
-} from "../services/usuarioService";
+} from "../firebase/userService";
+
 import {
   salvarAvatar,
   buscarAvatar
-} from "../services/perfilService";
+} from "../firebase/perfilService";
 
 
 export default function EditarPerfil(){
 
   const navigate = useNavigate();
 
-  const usuarioAtual = buscarUsuario();
 
-  const [nome,setNome] = useState(
-    usuarioAtual?.nome || ""
-  );
+  const [usuario,setUsuario] = useState(null);
+
+  const [nome,setNome] = useState("");
+
+  const [avatar,setAvatar] = useState(null);
 
 
-  const [avatar,setAvatar] = useState(
-    buscarAvatar()
-  );
+
+  useEffect(()=>{
+
+
+    async function carregar(){
+
+      const usuarioLogado = auth.currentUser;
+
+
+      if(!usuarioLogado){
+
+        navigate("/login");
+
+        return;
+
+      }
+
+
+      const dados = await buscarUsuarioPorUid(
+        usuarioLogado.uid
+      );
+
+
+      setUsuario(dados);
+
+
+      setNome(
+        dados?.nome || ""
+      );
+
+
+      const foto = await buscarAvatar(
+        dados.id
+      );
+
+
+      setAvatar(foto);
+
+
+    }
+
+
+    carregar();
+
+
+  },[]);
+
 
 
 
@@ -49,13 +98,17 @@ export default function EditarPerfil(){
 
     leitor.onload = ()=>{
 
-      setAvatar(leitor.result);
+      setAvatar(
+        leitor.result
+      );
 
     };
 
 
 
-    leitor.readAsDataURL(arquivo);
+    leitor.readAsDataURL(
+      arquivo
+    );
 
 
   }
@@ -66,33 +119,46 @@ export default function EditarPerfil(){
 
 
 
-  function salvar(){
+  async function salvar(){
 
 
-    const atualizado = {
+    if(!usuario){
 
-      ...usuarioAtual,
-
-      nome
-
-    };
-
-
-
-    atualizarUsuario(atualizado);
-
-
-
-    if(avatar){
-
-      salvarAvatar(avatar);
+      return;
 
     }
 
 
 
-    alert("Perfil atualizado!");
+    await atualizarUsuario(
 
+      usuario.id,
+
+      {
+        nome
+      }
+
+    );
+
+
+
+    if(avatar){
+
+      await salvarAvatar(
+
+        usuario.id,
+
+        avatar
+
+      );
+
+    }
+
+
+
+    alert(
+      "Perfil atualizado!"
+    );
 
 
     navigate("/perfil");
@@ -114,7 +180,6 @@ export default function EditarPerfil(){
       <div className="max-w-md mx-auto">
 
 
-
         <button
 
           onClick={()=>navigate("/perfil")}
@@ -131,10 +196,7 @@ export default function EditarPerfil(){
 
 
 
-
-
         <div className="bg-zinc-900 rounded-3xl p-6">
-
 
 
           <h1 className="text-3xl font-bold text-yellow-400 mb-6">
@@ -146,11 +208,7 @@ export default function EditarPerfil(){
 
 
 
-
-
-
           <div className="text-center mb-6">
-
 
 
             {
@@ -179,10 +237,6 @@ export default function EditarPerfil(){
 
 
 
-
-
-
-
             <label className="block mt-4 bg-blue-500 rounded-xl py-3 cursor-pointer font-bold">
 
 
@@ -206,9 +260,7 @@ export default function EditarPerfil(){
             </label>
 
 
-
           </div>
-
 
 
 
@@ -238,8 +290,6 @@ export default function EditarPerfil(){
 
 
 
-
-
           <button
 
             onClick={salvar}
@@ -255,13 +305,10 @@ export default function EditarPerfil(){
 
 
 
-
         </div>
 
 
-
       </div>
-
 
 
     </div>

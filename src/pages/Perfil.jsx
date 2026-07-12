@@ -1,16 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarUsuario } from "../services/usuarioService";
-import { buscarAvatar } from "../services/perfilService";
 
+import { auth } from "../firebase/config";
+
+import {
+  buscarUsuarioPorUid
+} from "../firebase/userService";
+
+import {
+  buscarAvatar
+} from "../firebase/perfilService";
 
 export default function Perfil(){
 
   const navigate = useNavigate();
 
-  const usuario = buscarUsuario();
+  const [usuario,setUsuario] = useState(null);
 
-  const avatar = buscarAvatar();
+  const [avatar,setAvatar] = useState(null);
+
+
+
+  useEffect(()=>{
+
+    async function carregar(){
+
+      const usuarioLogado = auth.currentUser;
+
+
+      if(!usuarioLogado){
+
+        navigate("/login");
+
+        return;
+
+      }
+
+
+      const dados = await buscarUsuarioPorUid(
+  usuarioLogado.uid
+);
+
+
+      setUsuario(dados);
+
+
+      const foto = await buscarAvatar(
+        usuarioLogado.uid
+      );
+
+
+      setAvatar(foto);
+
+    }
+
+
+    carregar();
+
+  },[]);
+
+
 
 
 
@@ -20,7 +69,7 @@ export default function Perfil(){
 
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
 
-        Usuário não encontrado
+        Carregando...
 
       </div>
 
@@ -31,14 +80,12 @@ export default function Perfil(){
 
 
 
-
   return (
 
     <div className="min-h-screen bg-black text-white p-6">
 
 
       <div className="max-w-md mx-auto">
-
 
 
         <button
@@ -55,17 +102,10 @@ export default function Perfil(){
 
 
 
-
-
-
         <div className="bg-zinc-900 rounded-3xl p-6 border border-yellow-500/30">
 
 
-
-
-
           <div className="text-center mb-8">
-
 
 
             {
@@ -94,9 +134,6 @@ export default function Perfil(){
 
 
 
-
-
-
             <h1 className="text-3xl font-bold text-yellow-400 mt-4">
 
               Meu Perfil
@@ -104,10 +141,7 @@ export default function Perfil(){
             </h1>
 
 
-
           </div>
-
-
 
 
 
@@ -125,7 +159,6 @@ export default function Perfil(){
 
           </button>
 
-
 <button
 
   onClick={()=>navigate("/alterar-senha")}
@@ -140,121 +173,54 @@ export default function Perfil(){
 
 
 
-
           <div className="space-y-5">
 
 
-
             <div>
 
               <p className="text-gray-400">
-
                 Nome
-
               </p>
 
               <p className="text-xl font-bold">
-
                 {usuario.nome}
-
               </p>
 
             </div>
 
 
 
-
-
-
             <div>
 
               <p className="text-gray-400">
-
                 Email
-
               </p>
 
               <p>
-
                 {usuario.email}
-
               </p>
 
             </div>
 
 
 
-
-
-
             <div>
 
               <p className="text-gray-400">
-
-                Tipo de conta
-
-              </p>
-
-              <p className="text-yellow-400">
-
-                {usuario.tipo}
-
-              </p>
-
-            </div>
-
-
-
-
-
-
-            <div>
-
-              <p className="text-gray-400">
-
                 Status
-
               </p>
 
               <p>
-
                 {usuario.status}
-
               </p>
 
             </div>
-
-
-
-
-
-
-            <div>
-
-              <p className="text-gray-400">
-
-                Data de cadastro
-
-              </p>
-
-              <p>
-
-                {new Date(usuario.criadoEm).toLocaleDateString()}
-
-              </p>
-
-            </div>
-
 
 
           </div>
 
 
-
-
-
         </div>
-
 
 
       </div>

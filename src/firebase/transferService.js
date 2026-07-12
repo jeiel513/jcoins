@@ -1,42 +1,69 @@
 import {
-  doc,
-  getDoc,
-  updateDoc
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc
 } from "firebase/firestore";
 
 import { db } from "./config";
 
 
+async function buscarUsuarioPorUid(uid){
+
+  const consulta = query(
+    collection(db,"usuarios"),
+    where("uid","==",uid)
+  );
+
+
+  const resultado = await getDocs(
+    consulta
+  );
+
+
+  if(resultado.empty){
+
+    return null;
+
+  }
+
+
+  const documento = resultado.docs[0];
+
+
+  return {
+
+    id: documento.id,
+
+    ...documento.data()
+
+  };
+
+}
+
+
+
 export async function transferirJCoins(
-  remetenteId,
-  destinatarioId,
+  remetenteUid,
+  destinatarioUid,
   valor
 ){
 
-  const remetenteRef = doc(
-    db,
-    "usuarios",
-    remetenteId
-  );
 
-  const destinatarioRef = doc(
-    db,
-    "usuarios",
-    destinatarioId
+  const remetente = await buscarUsuarioPorUid(
+    remetenteUid
   );
 
 
-  const remetenteDoc = await getDoc(
-    remetenteRef
+  const destinatario = await buscarUsuarioPorUid(
+    destinatarioUid
   );
 
 
-  const destinatarioDoc = await getDoc(
-    destinatarioRef
-  );
 
-
-  if(!remetenteDoc.exists()){
+  if(!remetente){
 
     return {
       sucesso:false,
@@ -46,7 +73,8 @@ export async function transferirJCoins(
   }
 
 
-  if(!destinatarioDoc.exists()){
+
+  if(!destinatario){
 
     return {
       sucesso:false,
@@ -54,18 +82,6 @@ export async function transferirJCoins(
     };
 
   }
-
-
-  const remetente = {
-    id:remetenteDoc.id,
-    ...remetenteDoc.data()
-  };
-
-
-  const destinatario = {
-    id:destinatarioDoc.id,
-    ...destinatarioDoc.data()
-  };
 
 
 
@@ -85,6 +101,7 @@ export async function transferirJCoins(
       saldo:0,
       transacoes:[]
     };
+
 
 
   const carteiraDestinatario =
@@ -142,7 +159,7 @@ export async function transferirJCoins(
 
   await updateDoc(
 
-    remetenteRef,
+    doc(db,"usuarios",remetente.id),
 
     {
       carteira:carteiraRemetente
@@ -154,7 +171,7 @@ export async function transferirJCoins(
 
   await updateDoc(
 
-    destinatarioRef,
+    doc(db,"usuarios",destinatario.id),
 
     {
       carteira:carteiraDestinatario

@@ -7,6 +7,8 @@ import { contarNaoLidas } from "../services/notificacaoService";
 
 export default function Home(){
 
+console.log("USUARIO HOME:", buscarUsuario());
+
   const navigate = useNavigate();
 
   const [usuario,setUsuario] = useState(null);

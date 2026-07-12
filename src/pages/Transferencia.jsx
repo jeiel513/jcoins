@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { transferirJCoins } from "../services/transferenciaService";
-import { buscarUsuarios, buscarUsuario } from "../services/usuarioService";
+
+import { auth } from "../firebase/config";
+
+import {
+  buscarUsuarios
+} from "../firebase/userService";
+
+import {
+  transferirJCoins
+} from "../firebase/transferService";
 
 
 export default function Transferencia(){
@@ -23,24 +31,47 @@ export default function Transferencia(){
   useEffect(()=>{
 
 
-    const usuarioAtual = buscarUsuario();
+    async function carregarUsuarios(){
 
 
-    const lista = buscarUsuarios();
+      const usuarioAtual = auth.currentUser;
 
 
-    const outrosUsuarios = lista.filter(
+      if(!usuarioAtual){
 
-      usuario =>
+        navigate("/login");
 
-        usuario.id !== usuarioAtual.id &&
+        return;
 
-        usuario.status === "aprovado"
-
-    );
+      }
 
 
-    setUsuarios(outrosUsuarios);
+
+      const lista = await buscarUsuarios();
+
+
+
+      const outrosUsuarios = lista.filter(
+
+        usuario =>
+
+          usuario.uid !== usuarioAtual.uid &&
+
+          usuario.status === "aprovado"
+
+      );
+
+
+
+      setUsuarios(outrosUsuarios);
+
+
+
+    }
+
+
+
+    carregarUsuarios();
 
 
   },[]);
@@ -49,28 +80,87 @@ export default function Transferencia(){
 
 
 
-  function enviar(){
 
 
-    const resultado = transferirJCoins(
+  async function enviar(){
+
+
+    const usuarioAtual = auth.currentUser;
+
+
+
+    if(!usuarioAtual){
+
+      setMensagem(
+        "Usuário não autenticado."
+      );
+
+      return;
+
+    }
+
+
+
+    if(!destino){
+
+      setMensagem(
+        "Escolha um destinatário."
+      );
+
+      return;
+
+    }
+
+
+
+    if(!valor || Number(valor) <= 0){
+
+      setMensagem(
+        "Digite um valor válido."
+      );
+
+      return;
+
+    }
+
+
+
+
+
+    const resultado = await transferirJCoins(
+
+
+      usuarioAtual.uid,
+
 
       destino,
 
+
       Number(valor)
+
 
     );
 
 
 
-    setMensagem(resultado.mensagem);
+
+    setMensagem(
+
+      resultado.mensagem
+
+    );
+
+
 
 
 
     if(resultado.sucesso){
 
+
       setDestino("");
 
       setValor("");
+
 
     }
 
@@ -107,6 +197,7 @@ export default function Transferencia(){
 
 
 
+
         <div className="text-center mb-8">
 
 
@@ -125,6 +216,7 @@ export default function Transferencia(){
           </h1>
 
 
+
           <p className="text-gray-400">
 
             Transferência entre usuários
@@ -132,7 +224,10 @@ export default function Transferencia(){
           </p>
 
 
+
         </div>
+
+
 
 
 
@@ -155,11 +250,13 @@ export default function Transferencia(){
 
           >
 
+
             <option value="">
 
               Escolha o destinatário
 
             </option>
+
 
 
 
@@ -170,9 +267,9 @@ export default function Transferencia(){
 
                 <option
 
-                  key={usuario.id}
+                  key={usuario.uid}
 
-                  value={usuario.id}
+                  value={usuario.uid}
 
                 >
 
@@ -186,7 +283,9 @@ export default function Transferencia(){
             }
 
 
+
           </select>
+
 
 
 
@@ -221,9 +320,10 @@ export default function Transferencia(){
 
           >
 
-            Enviar
+            Enviar J Coins
 
           </button>
+
 
 
 
@@ -251,11 +351,14 @@ export default function Transferencia(){
         </div>
 
 
+
       </div>
+
 
 
     </div>
 
   );
+
 
 }

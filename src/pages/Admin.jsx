@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { auth } from "../firebase/config";
 
 import {
   buscarUsuarios,
@@ -17,8 +14,6 @@ import {
 
 export default function Admin(){
 
-  const navigate = useNavigate();
-
   const [usuarios,setUsuarios] = useState([]);
 
   const [valores,setValores] = useState({});
@@ -30,31 +25,20 @@ export default function Admin(){
 
     const lista = await buscarUsuarios();
 
-console.log("USUÁRIOS RECEBIDOS DO FIRESTORE:", lista);
+    console.log("USUARIOS:", lista);
 
     setUsuarios(lista);
 
   }
 
 
+
   useEffect(()=>{
-
-    const usuarioLogado = auth.currentUser;
-
-
-if(!usuarioLogado){
-
-  navigate("/login");
-
-  return;
-
-}
-
 
     carregarUsuarios();
 
-
   },[]);
+
 
 
 
@@ -63,18 +47,27 @@ if(!usuarioLogado){
     await aprovarUsuario(id);
 
 
-    await adicionarNotificacao(
-      id,
-      "Seu cadastro foi aprovado pelo administrador."
+    const usuario = usuarios.find(
+      item => item.id === id
     );
+
+
+    if(usuario){
+
+      await adicionarNotificacao(
+        usuario.id,
+        "Seu cadastro foi aprovado pelo administrador."
+      );
+
+    }
 
 
     await carregarUsuarios();
 
-
     alert("Usuário aprovado!");
 
   }
+
 
 
 
@@ -84,14 +77,22 @@ if(!usuarioLogado){
     await bloquearUsuario(id);
 
 
-    await adicionarNotificacao(
-      id,
-      "Seu cadastro foi bloqueado."
+    const usuario = usuarios.find(
+      item => item.id === id
     );
 
 
-    await carregarUsuarios();
+    if(usuario){
 
+      await adicionarNotificacao(
+        usuario.id,
+        "Seu cadastro foi bloqueado."
+      );
+
+    }
+
+
+    await carregarUsuarios();
 
     alert("Usuário bloqueado!");
 
@@ -115,19 +116,40 @@ if(!usuarioLogado){
     }
 
 
+
     await adicionarSaldo(
       id,
       valor
     );
 
 
-    await adicionarNotificacao(
-      id,
-      `Você recebeu ${valor} J Coins do administrador.`
+
+    const usuario = usuarios.find(
+      item => item.id === id
     );
 
 
+
+    console.log(
+      "USUARIO NOTIFICACAO:",
+      usuario
+    );
+
+
+
+    if(usuario){
+
+      await adicionarNotificacao(
+        usuario.id,
+        `Você recebeu ${valor} J Coins do administrador.`
+      );
+
+    }
+
+
+
     await carregarUsuarios();
+
 
 
     setValores({
@@ -139,9 +161,11 @@ if(!usuarioLogado){
     });
 
 
+
     alert("J Coins adicionados!");
 
   }
+
 
 
 
@@ -155,7 +179,9 @@ if(!usuarioLogado){
 
 
         <h1 className="text-3xl font-bold text-yellow-400 mb-6">
+
           Painel Administrador
+
         </h1>
 
 
@@ -180,14 +206,23 @@ if(!usuarioLogado){
 
 
         {
+
           usuarios
+
           .filter(usuario=>{
 
-            const nome = (usuario.nome || "").toLowerCase();
 
-            const email = (usuario.email || "").toLowerCase();
+            const nome =
+              (usuario.nome || "").toLowerCase();
 
-            const texto = busca.toLowerCase();
+
+            const email =
+              (usuario.email || "").toLowerCase();
+
+
+            const texto =
+              busca.toLowerCase();
+
 
 
             return (
@@ -197,6 +232,7 @@ if(!usuarioLogado){
               email.includes(texto)
 
             );
+
 
           })
 
@@ -214,24 +250,29 @@ if(!usuarioLogado){
 
 
               <p>
+
                 <strong>Nome:</strong> {usuario.nome}
+
               </p>
 
 
               <p>
+
                 <strong>Email:</strong> {usuario.email}
+
               </p>
 
 
               <p>
 
-                <strong>Status:</strong>{" "}
+                <strong>ID:</strong> {usuario.id}
 
-                <span className="text-yellow-400">
+              </p>
 
-                  {usuario.status}
 
-                </span>
+              <p>
+
+                <strong>Status:</strong> {usuario.status}
 
               </p>
 
@@ -245,6 +286,7 @@ if(!usuarioLogado){
                 {" "}J Coins
 
               </p>
+
 
 
 
@@ -262,7 +304,7 @@ if(!usuarioLogado){
 
                     ...valores,
 
-                    [usuario.id]:e.target.value
+                    [usuario.id]: e.target.value
 
                   })
 
@@ -271,6 +313,7 @@ if(!usuarioLogado){
                 className="w-full mt-4 bg-zinc-800 rounded-xl px-4 py-3"
 
               />
+
 
 
 
@@ -292,7 +335,6 @@ if(!usuarioLogado){
               <div className="flex gap-3 mt-4">
 
 
-
                 <button
 
                   onClick={()=>aprovar(usuario.id)}
@@ -304,7 +346,6 @@ if(!usuarioLogado){
                   Aprovar
 
                 </button>
-
 
 
 
@@ -321,9 +362,7 @@ if(!usuarioLogado){
                 </button>
 
 
-
               </div>
-
 
 
             </div>
@@ -341,6 +380,7 @@ if(!usuarioLogado){
 
 
     </div>
+
 
   );
 
