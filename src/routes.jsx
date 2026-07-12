@@ -1,3 +1,4 @@
+import Carteira from "./pages/Carteira";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Splash from "./pages/Splash";
@@ -20,7 +21,9 @@ export default function AppRoutes() {
 
         <Route path="/home" element={<Home />} />
 
-        <Route path="/admin" element={<Admin />} />
+       <Route path="/carteira" element={<Carteira />} />
+
+ <Route path="/admin" element={<Admin />} />
 
       </Routes>
 
