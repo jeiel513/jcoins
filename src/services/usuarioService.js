@@ -4,7 +4,30 @@ export function cadastrarUsuario(
   senha
 ){
 
-  const usuario = {
+  const usuarios = buscarUsuarios();
+
+
+  const existe = usuarios.find(
+
+    usuario => usuario.email === email
+
+  );
+
+
+
+  if(existe){
+
+    alert("Este email já está cadastrado.");
+
+    return null;
+
+  }
+
+
+
+
+
+  const novoUsuario = {
 
     id: Date.now(),
 
@@ -14,41 +37,87 @@ export function cadastrarUsuario(
 
     senha,
 
-    tipo: "usuario",
+    tipo:"usuario",
 
-    status: "pendente",
+    status:"pendente",
 
-    saldo: 0,
+    carteira:{
 
-    criadoEm: new Date().toISOString()
+      saldo:0,
+
+      transacoes:[]
+
+    },
+
+    criadoEm:new Date().toISOString()
 
   };
 
 
-  salvarUsuario(usuario);
-
-
-  return usuario;
-
-}
 
 
 
-export function salvarUsuario(usuario){
+  usuarios.push(novoUsuario);
+
+
 
   localStorage.setItem(
-    "usuario",
-    JSON.stringify(usuario)
+
+    "usuarios",
+
+    JSON.stringify(usuarios)
+
   );
 
+
+
+  salvarUsuario(novoUsuario);
+
+
+
+  return novoUsuario;
+
 }
+
+
+
+
+
+
+
+
+export function buscarUsuarios(){
+
+
+  const dados = localStorage.getItem("usuarios");
+
+
+
+  if(!dados){
+
+    return [];
+
+  }
+
+
+
+  return JSON.parse(dados);
+
+
+}
+
+
+
+
+
 
 
 
 export function buscarUsuario(){
 
-  const dados =
-    localStorage.getItem("usuario");
+
+  const dados = localStorage.getItem("usuario");
+
 
 
   if(!dados){
@@ -58,24 +127,134 @@ export function buscarUsuario(){
   }
 
 
+
   return JSON.parse(dados);
+
 
 }
 
 
 
-export function atualizarSaldo(valor){
-
-  const usuario = buscarUsuario();
 
 
-  if(usuario){
-
-    usuario.saldo += valor;
 
 
-    salvarUsuario(usuario);
 
-  }
+export function salvarUsuario(usuario){
+
+
+
+  localStorage.setItem(
+
+    "usuario",
+
+    JSON.stringify(usuario)
+
+  );
+
+
+
+
+
+  const usuarios = buscarUsuarios();
+
+
+
+
+
+  const atualizados = usuarios.map(item=>{
+
+
+
+    if(item.id === usuario.id){
+
+
+      return usuario;
+
+
+    }
+
+
+
+    return item;
+
+
+
+  });
+
+
+
+
+
+
+  localStorage.setItem(
+
+    "usuarios",
+
+    JSON.stringify(atualizados)
+
+  );
+
+
+
+}
+
+
+
+
+
+
+
+
+export function atualizarUsuario(usuarioAtualizado){
+
+
+
+  const usuarios = buscarUsuarios();
+
+
+
+
+
+  const atualizados = usuarios.map(usuario=>{
+
+
+
+    if(usuario.id === usuarioAtualizado.id){
+
+
+      return usuarioAtualizado;
+
+
+    }
+
+
+
+    return usuario;
+
+
+
+  });
+
+
+
+
+
+
+  localStorage.setItem(
+
+    "usuarios",
+
+    JSON.stringify(atualizados)
+
+  );
+
+
+
+
+
+  salvarUsuario(usuarioAtualizado);
+
+
 
 }

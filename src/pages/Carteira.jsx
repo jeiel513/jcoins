@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { buscarCarteira, adicionarSaldo } from "../services/carteiraService";
+import { buscarCarteira } from "../services/carteiraService";
 
 
 export default function Carteira(){
@@ -10,23 +10,16 @@ export default function Carteira(){
   const navigate = useNavigate();
 
 
-  function atualizarSaldo(){
-
-    adicionarSaldo(100);
-
-    setCarteira(buscarCarteira());
-
-  }
-
-
 
   useEffect(()=>{
 
-    const dados = buscarCarteira();
 
-    setCarteira(dados);
+    setCarteira(buscarCarteira());
+
 
   },[]);
+
+
 
 
 
@@ -46,12 +39,16 @@ export default function Carteira(){
 
 
 
+
+
+
   return (
 
     <div className="min-h-screen bg-black text-white p-6">
 
 
       <div className="max-w-md mx-auto">
+
 
 
         <button
@@ -65,6 +62,8 @@ export default function Carteira(){
           ← Voltar
 
         </button>
+
+
 
 
 
@@ -100,6 +99,8 @@ export default function Carteira(){
 
 
 
+
+
         <div className="bg-zinc-900 rounded-3xl p-6 border border-yellow-500/30">
 
 
@@ -131,26 +132,13 @@ export default function Carteira(){
 
 
 
-        <button
-
-          onClick={atualizarSaldo}
-
-          className="w-full mt-6 bg-yellow-500 text-black rounded-xl py-3 font-bold"
-
-        >
-
-          +100 J Coins (teste)
-
-        </button>
-
-
 
 
         <button
 
           onClick={()=>navigate("/transferencia")}
 
-          className="w-full mt-4 bg-blue-500 rounded-xl py-3 font-bold"
+          className="w-full mt-6 bg-blue-500 rounded-xl py-3 font-bold"
 
         >
 
@@ -162,14 +150,17 @@ export default function Carteira(){
 
 
 
+
+
         <div className="mt-6 bg-zinc-900 rounded-3xl p-5">
 
 
-          <h3 className="font-bold mb-4">
+          <h3 className="font-bold mb-4 text-yellow-400">
 
-            Histórico
+            📜 Histórico
 
           </h3>
+
 
 
 
@@ -193,18 +184,22 @@ export default function Carteira(){
             :
 
 
-            (
-
-              carteira.transacoes.map((item,index)=>(
+            carteira.transacoes.map((item,index)=>(
 
 
-                <div
 
-                  key={index}
+              <div
 
-                  className="border-b border-zinc-700 py-3"
+                key={index}
 
-                >
+                className="border-b border-zinc-700 py-3"
+
+              >
+
+
+
+                <div className="flex justify-between">
+
 
                   <span>
 
@@ -213,8 +208,7 @@ export default function Carteira(){
                   </span>
 
 
-
-                  <span className="float-right text-yellow-400">
+                  <span className="text-yellow-400">
 
                     {item.valor} JC
 
@@ -224,15 +218,29 @@ export default function Carteira(){
                 </div>
 
 
-              ))
 
-            )
+
+
+                <p className="text-gray-500 text-sm mt-1">
+
+                  {new Date(item.data).toLocaleString()}
+
+                </p>
+
+
+
+
+              </div>
+
+
+            ))
 
           }
 
 
 
         </div>
+
 
 
 

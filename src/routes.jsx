@@ -1,3 +1,4 @@
+import Perfil from "./pages/Perfil";
 import Transferencia from "./pages/Transferencia";
 import Carteira from "./pages/Carteira";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -13,6 +14,8 @@ export default function AppRoutes() {
     <BrowserRouter>
 
       <Routes>
+
+<Route path="/perfil" element={<Perfil />} />
 
         <Route path="/" element={<Splash />} />
 

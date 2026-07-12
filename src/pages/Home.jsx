@@ -11,15 +11,21 @@ export default function Home(){
   const [carteira,setCarteira] = useState(null);
 
 
+
   useEffect(()=>{
+
 
     const dados = localStorage.getItem("usuario");
 
+
     if(dados){
 
-      setUsuario(JSON.parse(dados));
+      const usuarioAtual = JSON.parse(dados);
+
+      setUsuario(usuarioAtual);
 
       setCarteira(buscarCarteira());
+
 
     }else{
 
@@ -27,7 +33,10 @@ export default function Home(){
 
     }
 
+
   },[]);
+
+
 
 
 
@@ -41,7 +50,11 @@ export default function Home(){
 
 
 
+
+
+
   if(!usuario || !carteira){
+
 
     return (
 
@@ -57,6 +70,8 @@ export default function Home(){
 
 
 
+
+
   return (
 
     <div className="min-h-screen bg-black text-white p-6">
@@ -65,21 +80,30 @@ export default function Home(){
       <div className="max-w-md mx-auto">
 
 
+
         <div className="text-center mb-8">
 
 
           <div className="text-6xl">
+
             ☁️
+
           </div>
 
 
+
           <h1 className="text-3xl font-bold text-yellow-400">
+
             Cofre do Céu
+
           </h1>
 
 
+
           <p className="text-gray-400">
+
             Sua carteira de J Coins
+
           </p>
 
 
@@ -87,17 +111,25 @@ export default function Home(){
 
 
 
+
+
         <div className="bg-zinc-900 rounded-3xl p-6 border border-yellow-500/30">
 
 
           <p className="text-gray-400">
+
             Bem-vindo
+
           </p>
 
 
+
           <h2 className="text-2xl font-bold">
+
             {usuario.nome}
+
           </h2>
+
 
 
 
@@ -105,8 +137,11 @@ export default function Home(){
 
 
             <p className="text-gray-400">
+
               Seu saldo
+
             </p>
+
 
 
             <h3 className="text-5xl font-bold text-yellow-400 mt-2">
@@ -116,15 +151,22 @@ export default function Home(){
             </h3>
 
 
+
             <p className="text-yellow-400">
+
               J Coins
+
             </p>
+
 
 
           </div>
 
 
+
         </div>
+
+
 
 
 
@@ -142,17 +184,77 @@ export default function Home(){
 
 
 
+
+
+        <button
+
+          onClick={()=>navigate("/transferencia")}
+
+          className="w-full mt-4 bg-blue-500 rounded-xl py-3 font-bold"
+
+        >
+
+          💸 Enviar J Coins
+
+        </button>
+
+
+
+
+
+        <button
+
+          onClick={()=>navigate("/perfil")}
+
+          className="w-full mt-4 bg-zinc-700 rounded-xl py-3 font-bold"
+
+        >
+
+          👤 Meu Perfil
+
+        </button>
+
+
+
+
+
+        {
+
+          usuario.tipo === "admin" &&
+
+
+          <button
+
+            onClick={()=>navigate("/admin")}
+
+            className="w-full mt-4 bg-green-500 text-black rounded-xl py-3 font-bold"
+
+          >
+
+            👑 Painel Admin
+
+          </button>
+
+
+        }
+
+
+
+
+
+
         <button
 
           onClick={sair}
 
-          className="w-full mt-4 bg-red-500 rounded-xl py-3 font-bold"
+          className="w-full mt-6 bg-red-500 rounded-xl py-3 font-bold"
 
         >
 
           Sair
 
         </button>
+
 
 
 

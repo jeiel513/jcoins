@@ -1,43 +1,102 @@
+import { buscarUsuario } from "./usuarioService";
+
+
 export function buscarCarteira(){
 
-  const carteira =
-    localStorage.getItem("carteira");
+
+  const usuario = buscarUsuario();
 
 
-  if(carteira){
 
-    return JSON.parse(carteira);
+  if(!usuario){
+
+    return {
+
+      saldo:0,
+
+      transacoes:[]
+
+    };
 
   }
 
 
-  const novaCarteira = {
 
-    saldo: 0,
-
-    transacoes: []
-
-  };
+  if(!usuario.carteira){
 
 
-  localStorage.setItem(
-    "carteira",
-    JSON.stringify(novaCarteira)
-  );
+    usuario.carteira = {
+
+      saldo:0,
+
+      transacoes:[]
+
+    };
 
 
-  return novaCarteira;
+    localStorage.setItem(
+
+      "usuario",
+
+      JSON.stringify(usuario)
+
+    );
+
+
+  }
+
+
+
+  return usuario.carteira;
+
 
 }
 
 
 
+
+
+export function salvarCarteira(carteira){
+
+
+  const usuario = buscarUsuario();
+
+
+
+  if(usuario){
+
+
+    usuario.carteira = carteira;
+
+
+
+    localStorage.setItem(
+
+      "usuario",
+
+      JSON.stringify(usuario)
+
+    );
+
+
+  }
+
+
+}
+
+
+
+
+
 export function adicionarSaldo(valor){
+
 
   const carteira = buscarCarteira();
 
 
+
   carteira.saldo += valor;
+
 
 
   carteira.transacoes.push({
@@ -51,12 +110,12 @@ export function adicionarSaldo(valor){
   });
 
 
-  localStorage.setItem(
-    "carteira",
-    JSON.stringify(carteira)
-  );
+
+  salvarCarteira(carteira);
+
 
 
   return carteira;
+
 
 }

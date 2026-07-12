@@ -1,38 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { transferirJCoins } from "../services/transferenciaService";
+import { buscarUsuarios, buscarUsuario } from "../services/usuarioService";
 
 
 export default function Transferencia(){
 
   const navigate = useNavigate();
 
+
+  const [usuarios,setUsuarios] = useState([]);
+
   const [destino,setDestino] = useState("");
+
   const [valor,setValor] = useState("");
 
   const [mensagem,setMensagem] = useState("");
 
 
 
+
+  useEffect(()=>{
+
+
+    const usuarioAtual = buscarUsuario();
+
+
+    const lista = buscarUsuarios();
+
+
+    const outrosUsuarios = lista.filter(
+
+      usuario =>
+
+        usuario.id !== usuarioAtual.id &&
+
+        usuario.status === "aprovado"
+
+    );
+
+
+    setUsuarios(outrosUsuarios);
+
+
+  },[]);
+
+
+
+
+
   function enviar(){
 
+
     const resultado = transferirJCoins(
+
       destino,
+
       Number(valor)
+
     );
+
 
 
     setMensagem(resultado.mensagem);
 
 
+
     if(resultado.sucesso){
 
       setDestino("");
+
       setValor("");
 
     }
 
+
   }
+
+
+
 
 
 
@@ -42,6 +88,7 @@ export default function Transferencia(){
 
 
       <div className="max-w-md mx-auto">
+
 
 
         <button
@@ -58,12 +105,17 @@ export default function Transferencia(){
 
 
 
+
+
         <div className="text-center mb-8">
 
 
           <div className="text-6xl">
+
             💸
+
           </div>
+
 
 
           <h1 className="text-3xl font-bold text-yellow-400">
@@ -85,20 +137,59 @@ export default function Transferencia(){
 
 
 
+
+
         <div className="bg-zinc-900 rounded-3xl p-6 space-y-4">
 
 
-          <input
+
+
+
+          <select
 
             value={destino}
 
             onChange={(e)=>setDestino(e.target.value)}
 
-            placeholder="Usuário destino"
-
             className="w-full rounded-xl bg-zinc-800 border border-zinc-700 px-4 py-3 text-white"
 
-          />
+          >
+
+            <option value="">
+
+              Escolha o destinatário
+
+            </option>
+
+
+
+            {
+
+              usuarios.map(usuario=>(
+
+
+                <option
+
+                  key={usuario.id}
+
+                  value={usuario.id}
+
+                >
+
+                  {usuario.nome}
+
+                </option>
+
+
+              ))
+
+            }
+
+
+          </select>
+
+
+
 
 
 
@@ -118,6 +209,10 @@ export default function Transferencia(){
 
 
 
+
+
+
+
           <button
 
             onClick={enviar}
@@ -132,9 +227,13 @@ export default function Transferencia(){
 
 
 
+
+
+
           {
 
             mensagem &&
+
 
             <p className="text-center text-yellow-400">
 
@@ -142,7 +241,11 @@ export default function Transferencia(){
 
             </p>
 
+
           }
+
+
+
 
 
         </div>

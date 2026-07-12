@@ -1,48 +1,104 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { buscarUsuario } from "../services/usuarioService";
+import { buscarUsuarios, salvarUsuario } from "../services/usuarioService";
 
 
-export default function Login() {
+export default function Login(){
 
   const navigate = useNavigate();
 
   const [email,setEmail] = useState("");
+
   const [senha,setSenha] = useState("");
+
 
 
   function entrar(){
 
-    const usuario = buscarUsuario();
+
+    // LOGIN ADMIN
+
+    if(
+      email === "admin@cofredoceu.com" &&
+      senha === "123456"
+    ){
+
+      const admin = {
+
+        id:1,
+
+        nome:"Administrador",
+
+        email,
+
+        tipo:"admin",
+
+        status:"aprovado"
+
+      };
 
 
-    if(!usuario){
+      salvarUsuario(admin);
 
-      alert("Usuário não encontrado. Faça o cadastro.");
+
+      navigate("/admin");
+
 
       return;
 
     }
 
 
-    if(usuario.email === email && usuario.senha === senha){
-
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify(usuario)
-      );
 
 
-      navigate("/home");
+    // LOGIN USUÁRIO
+
+    const usuarios = buscarUsuarios();
 
 
-    }else{
 
-      alert("Email ou senha incorretos");
+    const usuario = usuarios.find(
+
+      item =>
+
+        item.email === email &&
+
+        item.senha === senha
+
+    );
+
+
+
+    if(!usuario){
+
+      alert("Email ou senha incorretos.");
+
+      return;
 
     }
 
+
+
+    if(usuario.status !== "aprovado"){
+
+
+      alert("Aguarde a aprovação do administrador.");
+
+      return;
+
+    }
+
+
+
+    salvarUsuario(usuario);
+
+
+
+    navigate("/home");
+
+
   }
+
 
 
 
@@ -56,19 +112,27 @@ export default function Login() {
 
         <div className="text-center mb-8">
 
+
           <div className="text-5xl mb-4">
+
             ☁️
+
           </div>
 
 
           <h1 className="text-3xl font-bold text-yellow-400">
+
             Cofre do Céu
+
           </h1>
 
 
           <p className="text-gray-400 mt-2">
+
             Entrar na sua carteira J Coins
+
           </p>
+
 
         </div>
 
@@ -130,12 +194,19 @@ export default function Login() {
 
           Ainda não tem conta?
 
+
           <Link
+
             to="/cadastro"
+
             className="text-yellow-400 ml-2"
+
           >
+
             Criar cadastro
+
           </Link>
+
 
         </p>
 
