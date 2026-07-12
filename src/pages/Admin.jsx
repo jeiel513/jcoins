@@ -16,7 +16,7 @@ export default function Admin(){
 
   const [valores,setValores] = useState({});
 
-
+const [busca,setBusca] = useState("");
 
   function carregarUsuarios(){
 
@@ -258,7 +258,13 @@ export default function Admin(){
 
 
 
-
+<input
+  type="text"
+  placeholder="🔎 Buscar por nome ou e-mail"
+  value={busca}
+  onChange={(e)=>setBusca(e.target.value)}
+  className="w-full mb-6 bg-zinc-800 rounded-xl px-4 py-3"
+/>
 
         <div className="space-y-5">
 
@@ -266,7 +272,12 @@ export default function Admin(){
 
         {
 
-        usuarios.map(usuario=>(
+        usuarios
+  .filter(usuario =>
+    usuario.nome.toLowerCase().includes(busca.toLowerCase()) ||
+    usuario.email.toLowerCase().includes(busca.toLowerCase())
+  )
+  .map(usuario=>(
 
 
           <div
