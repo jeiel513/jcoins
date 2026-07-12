@@ -1,4 +1,5 @@
 import { buscarUsuario, buscarUsuarios } from "./usuarioService";
+import { adicionarNotificacao } from "./notificacaoService";
 
 
 export function transferirJCoins(destinoId, valor){
@@ -53,8 +54,11 @@ export function transferirJCoins(destinoId, valor){
   if(!remetente.carteira){
 
     remetente.carteira = {
+
       saldo:0,
+
       transacoes:[]
+
     };
 
   }
@@ -77,8 +81,11 @@ export function transferirJCoins(destinoId, valor){
   if(!destinatario.carteira){
 
     destinatario.carteira = {
+
       saldo:0,
+
       transacoes:[]
+
     };
 
   }
@@ -87,7 +94,7 @@ export function transferirJCoins(destinoId, valor){
 
 
 
-  // retirar de quem envia
+  // retirar do remetente
 
   remetente.carteira.saldo -= valor;
 
@@ -108,7 +115,9 @@ export function transferirJCoins(destinoId, valor){
 
 
 
-  // adicionar para quem recebe
+
+
+  // adicionar ao destinatário
 
   destinatario.carteira.saldo += valor;
 
@@ -130,7 +139,36 @@ export function transferirJCoins(destinoId, valor){
 
 
 
-  // atualizar lista geral
+
+  // notificação para quem recebeu
+
+  adicionarNotificacao(
+
+    destinatario.id,
+
+    `Você recebeu ${valor} J Coins de ${remetente.nome}`
+
+  );
+
+
+
+
+
+  // notificação para quem enviou
+
+  adicionarNotificacao(
+
+    remetente.id,
+
+    `Você enviou ${valor} J Coins para ${destinatario.nome}`
+
+  );
+
+
+
+
+
+
 
   const novaLista = usuarios.map(usuario=>{
 
@@ -158,6 +196,8 @@ export function transferirJCoins(destinoId, valor){
 
 
 
+
+
   localStorage.setItem(
 
     "usuarios",
@@ -170,7 +210,7 @@ export function transferirJCoins(destinoId, valor){
 
 
 
-  // mantém remetente atualizado
+
 
   localStorage.setItem(
 
@@ -179,6 +219,8 @@ export function transferirJCoins(destinoId, valor){
     JSON.stringify(remetente)
 
   );
+
+
 
 
 

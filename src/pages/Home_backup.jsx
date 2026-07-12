@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buscarCarteira } from "../services/carteiraService";
-import { buscarUsuario } from "../services/usuarioService";
-import { contarNaoLidas } from "../services/notificacaoService";
 
 
 export default function Home(){
@@ -11,42 +9,30 @@ export default function Home(){
 
   const [usuario,setUsuario] = useState(null);
   const [carteira,setCarteira] = useState(null);
-  const [notificacoes,setNotificacoes] = useState(0);
-
-
-
-  function carregarDados(){
-
-    const usuarioAtual = buscarUsuario();
-
-
-    if(usuarioAtual){
-
-      setUsuario(usuarioAtual);
-
-      setCarteira(buscarCarteira());
-
-      setNotificacoes(
-
-        contarNaoLidas(usuarioAtual.id)
-
-      );
-
-    }else{
-
-      navigate("/login");
-
-    }
-
-  }
-
-
 
 
 
   useEffect(()=>{
 
-    carregarDados();
+
+    const dados = localStorage.getItem("usuario");
+
+
+    if(dados){
+
+      setUsuario(JSON.parse(dados));
+
+      setCarteira(buscarCarteira());
+
+
+    }else{
+
+
+      navigate("/login");
+
+
+    }
+
 
   },[]);
 
@@ -54,11 +40,14 @@ export default function Home(){
 
 
 
+
   function sair(){
+
 
     localStorage.removeItem("usuario");
 
     navigate("/login");
+
 
   }
 
@@ -70,6 +59,7 @@ export default function Home(){
 
   if(!usuario || !carteira){
 
+
     return (
 
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -79,6 +69,7 @@ export default function Home(){
       </div>
 
     );
+
 
   }
 
@@ -110,6 +101,7 @@ export default function Home(){
 
 
 
+
           <h1 className="text-3xl font-bold text-yellow-400">
 
             Cofre do Céu
@@ -118,11 +110,13 @@ export default function Home(){
 
 
 
+
           <p className="text-gray-400">
 
             Sua carteira de J Coins
 
           </p>
+
 
 
         </div>
@@ -136,11 +130,13 @@ export default function Home(){
         <div className="bg-zinc-900 rounded-3xl p-6 border border-yellow-500/30">
 
 
+
           <p className="text-gray-400">
 
             Bem-vindo
 
           </p>
+
 
 
 
@@ -158,11 +154,14 @@ export default function Home(){
           <div className="mt-8 text-center">
 
 
+
             <p className="text-gray-400">
 
               Seu saldo
 
             </p>
+
+
 
 
 
@@ -174,6 +173,8 @@ export default function Home(){
 
 
 
+
+
             <p className="text-yellow-400">
 
               J Coins
@@ -182,7 +183,10 @@ export default function Home(){
 
 
 
+
           </div>
+
+
 
 
 
@@ -203,15 +207,6 @@ export default function Home(){
         >
 
           🔔 Notificações
-
-          {
-
-            notificacoes > 0 &&
-
-            ` (${notificacoes})`
-
-          }
-
 
         </button>
 
@@ -256,6 +251,7 @@ export default function Home(){
 
 
       </div>
+
 
 
     </div>

@@ -5,6 +5,7 @@ import {
   atualizarUsuario,
   buscarUsuario
 } from "../services/usuarioService";
+import { adicionarNotificacao } from "../services/notificacaoService";
 
 
 export default function Admin(){
@@ -71,10 +72,21 @@ export default function Admin(){
     });
 
 
+    adicionarNotificacao(
+
+      usuario.id,
+
+      "Seu cadastro foi aprovado pelo administrador"
+
+    );
+
+
     carregarUsuarios();
 
 
   }
+
+
 
 
 
@@ -99,10 +111,20 @@ export default function Admin(){
     });
 
 
+    adicionarNotificacao(
+
+      usuario.id,
+
+      "Seu cadastro foi bloqueado"
+
+    );
+
+
     carregarUsuarios();
 
 
   }
+
 
 
 
@@ -118,6 +140,7 @@ export default function Admin(){
       item=>item.id === id
 
     );
+
 
 
     const valor = Number(valores[id]);
@@ -159,6 +182,7 @@ export default function Admin(){
 
 
 
+
     usuario.carteira.transacoes.push({
 
       tipo:"crédito administrativo",
@@ -174,7 +198,23 @@ export default function Admin(){
 
 
 
+
     atualizarUsuario(usuario);
+
+
+
+
+
+    adicionarNotificacao(
+
+      usuario.id,
+
+      `Você recebeu ${valor} J Coins do administrador`
+
+    );
+
+
+
 
 
     carregarUsuarios();
@@ -200,6 +240,8 @@ export default function Admin(){
 
 
 
+
+
   return (
 
     <div className="min-h-screen bg-black p-6 text-white">
@@ -213,6 +255,7 @@ export default function Admin(){
           Painel Administrador
 
         </h1>
+
 
 
 
@@ -274,6 +317,7 @@ export default function Admin(){
 
 
 
+
             <input
 
               type="number"
@@ -297,6 +341,7 @@ export default function Admin(){
               className="w-full mt-4 bg-zinc-800 rounded-xl px-4 py-3"
 
             />
+
 
 
 

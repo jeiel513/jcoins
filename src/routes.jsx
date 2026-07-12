@@ -1,3 +1,4 @@
+import Notificacoes from "./pages/Notificacoes";
 import Perfil from "./pages/Perfil";
 import Transferencia from "./pages/Transferencia";
 import Carteira from "./pages/Carteira";
@@ -14,6 +15,8 @@ export default function AppRoutes() {
     <BrowserRouter>
 
       <Routes>
+<Route path="/notificacoes" element={<Notificacoes />} />
+
 
 <Route path="/perfil" element={<Perfil />} />
 
