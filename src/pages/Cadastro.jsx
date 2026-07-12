@@ -1,47 +1,66 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "../services/usuarioService";
 
+import { cadastrar } from "../firebase/authService";
+import { criarUsuario } from "../firebase/userService";
 
 export default function Cadastro() {
 
   const navigate = useNavigate();
 
-
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
-
-  function criarConta(e){
+  async function criarConta(e){
 
     e.preventDefault();
 
+    setCarregando(true);
 
-    cadastrarUsuario(
-      nome,
-      email,
-      senha
-    );
+    try{
 
+      const authUser = await cadastrar(email, senha);
 
-    alert(
-      "Cadastro realizado! Aguarde aprovação do administrador."
-    );
+      await criarUsuario({
+        uid: authUser.uid,
+        nome,
+        email,
+        tipo: "usuario",
+        status: "pendente",
+        criadoEm: new Date().toISOString(),
+        carteira: {
+          saldo: 0,
+          transacoes: []
+        }
+      });
 
+      alert(
+        "Cadastro realizado! Aguarde aprovação do administrador."
+      );
 
-    navigate("/login");
+      navigate("/login");
+
+    }catch(error){
+
+      console.error(error);
+
+      alert("Erro ao criar conta: " + error.message);
+
+    }finally{
+
+      setCarregando(false);
+
+    }
 
   }
-
-
 
   return (
 
     <div className="min-h-screen flex items-center justify-center bg-black px-4">
 
       <div className="w-full max-w-md bg-zinc-900 rounded-2xl p-8">
-
 
         <div className="text-center mb-8">
 
@@ -59,13 +78,10 @@ export default function Cadastro() {
 
         </div>
 
-
-
         <form
           onSubmit={criarConta}
           className="space-y-4"
         >
-
 
           <input
             value={nome}
@@ -74,8 +90,6 @@ export default function Cadastro() {
             className="w-full rounded-xl bg-zinc-800 border border-zinc-700 px-4 py-3 text-white"
             required
           />
-
-
 
           <input
             type="email"
@@ -86,8 +100,6 @@ export default function Cadastro() {
             required
           />
 
-
-
           <input
             type="password"
             value={senha}
@@ -97,19 +109,15 @@ export default function Cadastro() {
             required
           />
 
-
-
           <button
             type="submit"
-            className="w-full rounded-xl bg-yellow-500 py-3 font-bold text-black"
+            disabled={carregando}
+            className="w-full rounded-xl bg-yellow-500 py-3 font-bold text-black disabled:opacity-60"
           >
-            Criar cadastro
+            {carregando ? "Criando conta..." : "Criar cadastro"}
           </button>
 
-
         </form>
-
-
 
         <p className="text-center text-gray-400 mt-6">
 
@@ -123,7 +131,6 @@ export default function Cadastro() {
           </Link>
 
         </p>
-
 
       </div>
 
