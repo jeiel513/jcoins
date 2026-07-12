@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { buscarCarteira } from "../services/carteiraService";
 
 
 export default function Home(){
@@ -7,6 +8,7 @@ export default function Home(){
   const navigate = useNavigate();
 
   const [usuario,setUsuario] = useState(null);
+  const [carteira,setCarteira] = useState(null);
 
 
   useEffect(()=>{
@@ -16,6 +18,8 @@ export default function Home(){
     if(dados){
 
       setUsuario(JSON.parse(dados));
+
+      setCarteira(buscarCarteira());
 
     }else{
 
@@ -37,19 +41,14 @@ export default function Home(){
 
 
 
-  if(!usuario){
+  if(!usuario || !carteira){
 
     return (
 
-      <div style={{
-        background:"#000",
-        color:"#fff",
-        minHeight:"100vh",
-        display:"flex",
-        alignItems:"center",
-        justifyContent:"center"
-      }}>
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+
         Carregando...
+
       </div>
 
     );
@@ -68,17 +67,21 @@ export default function Home(){
 
         <div className="text-center mb-8">
 
+
           <div className="text-6xl">
             ☁️
           </div>
+
 
           <h1 className="text-3xl font-bold text-yellow-400">
             Cofre do Céu
           </h1>
 
+
           <p className="text-gray-400">
             Sua carteira de J Coins
           </p>
+
 
         </div>
 
@@ -107,7 +110,9 @@ export default function Home(){
 
 
             <h3 className="text-5xl font-bold text-yellow-400 mt-2">
-              {usuario.saldo || 0}
+
+              {carteira.saldo}
+
             </h3>
 
 
@@ -125,9 +130,23 @@ export default function Home(){
 
         <button
 
+          onClick={()=>navigate("/carteira")}
+
+          className="w-full mt-5 bg-yellow-500 text-black rounded-xl py-3 font-bold"
+
+        >
+
+          🪙 Minha Carteira
+
+        </button>
+
+
+
+        <button
+
           onClick={sair}
 
-          className="w-full mt-6 bg-red-500 rounded-xl py-3 font-bold"
+          className="w-full mt-4 bg-red-500 rounded-xl py-3 font-bold"
 
         >
 
