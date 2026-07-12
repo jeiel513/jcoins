@@ -19,6 +19,7 @@ export default function Carteira(){
   }
 
 
+
   useEffect(()=>{
 
     const dados = buscarCarteira();
@@ -67,6 +68,7 @@ export default function Carteira(){
 
 
 
+
         <div className="text-center mb-8">
 
 
@@ -77,11 +79,13 @@ export default function Carteira(){
           </div>
 
 
+
           <h1 className="text-3xl font-bold text-yellow-400">
 
             Minha Carteira
 
           </h1>
+
 
 
           <p className="text-gray-400">
@@ -136,6 +140,21 @@ export default function Carteira(){
         >
 
           +100 J Coins (teste)
+
+        </button>
+
+
+
+
+        <button
+
+          onClick={()=>navigate("/transferencia")}
+
+          className="w-full mt-4 bg-blue-500 rounded-xl py-3 font-bold"
+
+        >
+
+          💸 Enviar J Coins
 
         </button>
 

@@ -1,3 +1,4 @@
+import Transferencia from "./pages/Transferencia";
 import Carteira from "./pages/Carteira";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -22,6 +23,8 @@ export default function AppRoutes() {
         <Route path="/home" element={<Home />} />
 
        <Route path="/carteira" element={<Carteira />} />
+
+<Route path="/transferencia" element={<Transferencia />} />
 
  <Route path="/admin" element={<Admin />} />
 
