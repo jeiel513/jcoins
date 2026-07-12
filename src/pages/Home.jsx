@@ -191,7 +191,17 @@ export default function Home(){
 
 
 
+<button
 
+  onClick={()=>navigate("/perfil")}
+
+  className="w-full mt-5 bg-blue-500 rounded-xl py-3 font-bold"
+
+>
+
+  👤 Meu Perfil
+
+</button>
 
 
         <button
